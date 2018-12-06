@@ -129,6 +129,16 @@ int isZero(const struct NUMBER *a)
 //
 int numComp(const struct NUMBER *a, const struct NUMBER *b)
 {
+    int i;
+
+    for (i = KETA - 1; i >= 0; i--) {
+        if (a->n[i] > b->n[i])
+            return 1;
+        else if (a->n[i] < b->n[i])
+            return -1;
+    }
+
+    return 0;
 }
 
 //
