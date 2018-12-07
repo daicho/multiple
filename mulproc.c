@@ -141,22 +141,27 @@ int isZero(const struct NUMBER *a)
 int numComp(const struct NUMBER *a, const struct NUMBER *b)
 {
     int i;
-    int inv;
 
-    if (getSign(a) == PLUS  && getSign(b) == MINUS)
+    if (getSign(a) == PLUS && getSign(b) == MINUS)
         return 1;
     if (getSign(a) == MINUS && getSign(b) == PLUS)
         return -1;
-    if (getSign(a) == PLUS  && getSign(b) == PLUS)
-        inv = 1;
-    if (getSign(a) == MINUS && getSign(b) == MINUS)
-        inv = -1;
 
-    for (i = KETA - 1; i >= 0; i--) {
-        if (a->n[i] > b->n[i])
-            return 1 * inv;
-        else if (a->n[i] < b->n[i])
-            return -1 * inv;
+    if (getSign(a) == PLUS && getSign(b) == PLUS) {
+        for (i = KETA - 1; i >= 0; i--) {
+            if (a->n[i] > b->n[i])
+                return 1;
+            else if (a->n[i] < b->n[i])
+                return -1;
+        }
+        return 0;
+    }
+
+    if (getSign(a) == MINUS && getSign(b) == MINUS) {
+        struct NUMBER c, d;
+        getAbs(a, &c);
+        getAbs(b, &d);
+        return numComp(&c, &d) * -1;
     }
 
     return 0;
