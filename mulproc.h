@@ -12,6 +12,7 @@ struct NUMBER {
 void clearByZero(struct NUMBER *);
 void setRnd(struct NUMBER *, int);
 void copyNumber(const struct NUMBER *, struct NUMBER *);
+void swap(struct NUMBER *, struct NUMBER *);
 void dispNumber(const struct NUMBER *);
 
 int  mulBy10(const struct NUMBER *, struct NUMBER *);

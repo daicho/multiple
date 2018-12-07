@@ -43,6 +43,18 @@ void copyNumber(const struct NUMBER *a, struct NUMBER *b)
 }
 
 //
+// aとbを交換する
+//
+void swap(struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER temp;
+
+    copyNumber(a, &temp);
+    copyNumber(b, a);
+    copyNumber(&temp, b);
+}
+
+//
 // 値を表示
 //
 void dispNumber(const struct NUMBER *a)
@@ -88,7 +100,6 @@ int mulBy10(const struct NUMBER *a, struct NUMBER *b)
 int divBy10(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
-    int mod;
 
     for (i = 0; i < KETA - 1; i++)
         b->n[i] = a->n[i + 1];
@@ -255,20 +266,48 @@ int getSign(const struct NUMBER *a)
 int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
     int i;
+    int ret;
     int carry = 0;
 
     clearByZero(c);
 
-    for (i = 0; i < KETA; i++) {
-        c->n[i] = a->n[i] + b->n[i] + carry;
-        carry = c->n[i] / 10;
-        c->n[i] %= 10;
+    if (getSign(a) == PLUS && getSign(b) == PLUS) {
+        setSign(c, PLUS);
+
+        for (i = 0; i < KETA; i++) {
+            c->n[i] = a->n[i] + b->n[i] + carry;
+            carry = c->n[i] / 10;
+            c->n[i] %= 10;
+        }
+
+        if (carry == 0)
+            ret = 0;
+        else
+            ret = -1;
     }
 
-    if (carry == 0)
-        return 0;
-    else
-        return -1;
+    if (getSign(a) == MINUS && getSign(b) == MINUS) {
+        struct NUMBER d, e;
+        getAbs(a, &d);
+        getAbs(b, &e);
+
+        ret = add(&d, &e, c);
+        setSign(c, MINUS);
+    }
+
+    if (getSign(a) == PLUS && getSign(b) == MINUS) {
+        struct NUMBER d;
+        getAbs(b, &d);
+        ret = sub(a, &d, c);
+    }
+
+    if (getSign(a) == MINUS && getSign(b) == PLUS) {
+        struct NUMBER d;
+        getAbs(a, &d);
+        ret = sub(b, &d, c);
+    }
+
+    return ret;
 }
 
 //
@@ -279,25 +318,50 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
     int i;
+    int ret;
     int carry = 0;
 
     clearByZero(c);
 
-    for (i = 0; i < KETA; i++) {
-        int digit_a = a->n[i] - carry;
-        int digit_b = b->n[i];
+    if (getSign(a) == PLUS && getSign(b) == PLUS) {
+        if (numComp(a, b) != -1) {
+            setSign(c, PLUS);
 
-        if (digit_a >= digit_b) {
-            c->n[i] = digit_a - digit_b;
-            carry = 0;
+            for (i = 0; i < KETA; i++) {
+                int digit_a = a->n[i] - carry;
+                int digit_b = b->n[i];
+
+                if (digit_a >= digit_b) {
+                    c->n[i] = digit_a - digit_b;
+                    carry = 0;
+                } else {
+                    c->n[i] = 10 + digit_a - digit_b;
+                    carry = 1;
+                }
+            }
         } else {
-            c->n[i] = 10 + digit_a - digit_b;
-            carry = 1;
+            sub(b, a, c);
+            setSign(c, MINUS);
         }
+
+        if (carry == 0)
+            ret = 0;
+        else
+            ret = -1;
     }
 
-    if (carry == 0)
-        return 0;
-    else
-        return -1;
+    if (getSign(a) == MINUS && getSign(b) == PLUS) {
+        struct NUMBER d;
+        getAbs(a, &d);
+        ret = add(&d, b, c);
+        setSign(c, MINUS);
+    }
+
+    if (getSign(b) == MINUS) {
+        struct NUMBER d;
+        getAbs(b, &d);
+        ret = add(a, &d, c);
+    }
+
+    return ret;
 }
