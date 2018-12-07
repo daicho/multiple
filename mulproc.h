@@ -17,6 +17,7 @@ void dispNumber(const struct NUMBER *);
 
 int  mulBy10(const struct NUMBER *, struct NUMBER *);
 int  divBy10(const struct NUMBER *, struct NUMBER *);
+int  simpleMultiple(int a, int b, int *c);
 int  isZero(const struct NUMBER *);
 int  numComp(const struct NUMBER *, const struct NUMBER *);
 

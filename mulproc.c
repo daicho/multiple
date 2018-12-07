@@ -115,6 +115,20 @@ int divBy10(const struct NUMBER *a, struct NUMBER *b)
 }
 
 //
+// 加算しか使わない乗算
+//
+int simpleMultiple(int a, int b, int *c)
+{
+    int i;
+    *c = 0;
+
+    for (i = 0; i < b; i++)
+        *c += a;
+
+    return 0;
+}
+
+//
 // 値が0か判別する
 // 戻り値：
 //    0 ... a == 0
