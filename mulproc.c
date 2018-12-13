@@ -72,63 +72,6 @@ void dispNumber(const struct NUMBER *a)
 }
 
 //
-// aを10倍してbに返す
-// 戻り値：
-//    0 ... 正常終了
-//   -1 ... オーバーフロー
-//
-int mulBy10(const struct NUMBER *a, struct NUMBER *b)
-{
-    int i;
-
-    if (a->n[KETA - 1])
-        return -1;
-
-    for (i = 0; i < KETA - 1; i++)
-        b->n[i + 1] = a->n[i];
-    b->n[0] = 0;
-    setSign(b, getSign(a));
-
-    return 0;
-}
-
-//
-// aを1/10倍してbに返す
-// 戻り値：
-//   aを10で割った余り
-//
-int divBy10(const struct NUMBER *a, struct NUMBER *b)
-{
-    int i;
-
-    for (i = 0; i < KETA - 1; i++)
-        b->n[i] = a->n[i + 1];
-    b->n[KETA - 1] = 0;
-
-    // ゼロだったら符号をプラスにセット
-    if (isZero(b) == 0)
-        setSign(b, PLUS);
-    else
-        setSign(b, getSign(a));
-
-    return a->n[0];
-}
-
-//
-// 加算しか使わない乗算
-//
-int simpleMultiple(int a, int b, int *c)
-{
-    int i;
-    *c = 0;
-
-    for (i = 0; i < b; i++)
-        *c += a;
-
-    return 0;
-}
-
-//
 // 値が0か判別する
 // 戻り値：
 //    0 ... a == 0
@@ -278,6 +221,83 @@ int getSign(const struct NUMBER *a)
 }
 
 //
+// aを10倍してbに返す
+// 戻り値：
+//    0 ... 正常終了
+//   -1 ... オーバーフロー
+//
+int mulBy10(const struct NUMBER *a, struct NUMBER *b)
+{
+    int i;
+
+    if (a->n[KETA - 1])
+        return -1;
+
+    for (i = 0; i < KETA - 1; i++)
+        b->n[i + 1] = a->n[i];
+    b->n[0] = 0;
+    setSign(b, getSign(a));
+
+    return 0;
+}
+
+//
+// aを1/10倍してbに返す
+// 戻り値：
+//   aを10で割った余り
+//
+int divBy10(const struct NUMBER *a, struct NUMBER *b)
+{
+    int i;
+
+    for (i = 0; i < KETA - 1; i++)
+        b->n[i] = a->n[i + 1];
+    b->n[KETA - 1] = 0;
+
+    // ゼロだったら符号をプラスにセット
+    if (isZero(b) == 0)
+        setSign(b, PLUS);
+    else
+        setSign(b, getSign(a));
+
+    return a->n[0];
+}
+
+//
+// 加算しか使わない乗算
+//
+int simpleMultiple(int a, int b, int *c)
+{
+    int i;
+    int temp;
+
+    // 大きい数に小さい数をかける
+    if (a < b) {
+        temp = a;
+        a = b;
+        b = temp;
+    }
+
+    // 負の数に対応
+    if (b < 0) {
+        a *= -1;
+        b *= -1;
+    }
+
+    *c = 0;
+
+    i = 0;
+    while (1) {
+        if (i >= b)
+            break;
+        *c += a;
+        i++;
+    }
+
+    return 0;
+}
+
+//
 // c <- a + b
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
@@ -384,3 +404,30 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
     return ret;
 }
+
+//
+// c <- a * b
+//
+int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
+{
+    // 途中
+    int i;
+    int ret;
+    int carry = 0;
+
+    clearByZero(c);
+
+    for (i = 0; i < KETA ; i++) {
+        c->n[i] = a->n[i] * b->n[i] + carry;
+        carry = c->n[i] / 10;
+        c->n[i] %= 10;
+    }
+
+    if (carry == 0)
+        ret = 0;
+    else
+        ret = 1;
+
+    return ret;
+}
+

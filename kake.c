@@ -9,14 +9,13 @@ int main(void)
 
     srandom(time(NULL));
 
-    setRnd(&a, KETA);
+    setRnd(&a, 3);
     printf("a = "); dispNumber(&a);
-    setRnd(&b, KETA);
+    setRnd(&b, 3);
     printf("b = "); dispNumber(&b);
 
-    int d;
-    simpleMultiple(100, 100, &d);
-    printf("%d\n", d);
+    multiple(&a, &b, &c);
+    printf("c = "); dispNumber(&c);
 
     return 0;
 }
