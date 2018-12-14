@@ -433,24 +433,46 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 //
 int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
 {
-    int i;
-
-    clearByZero(c);
-    clearByZero(d);
+    struct NUMBER e;
 
     if (isZero(b) == 0)
         return -1;
 
-    i = 0;
+    copyNumber(a, d);
+    clearByZero(c);
+
     while (1) {
-        if (a < b)
+        if (numComp(d, b) = -1)
             break;
-        a -= b;
-        i++;
+
+        sub(d, b, e);
+        copyNumber(e, d);
+
+        increment(c, e);
+        copyNumber(e, c);
     }
 
-    *c = i * sign_a * sign_b;
-    *d = a * sign_a;
-
     return 0;
+}
+
+//
+// b <- a + 1
+//
+int increment(struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER one;
+    setInt(&one, 1);
+
+    return add(a, &one, b);
+}
+
+//
+// b <- a - 1
+//
+int decrement(struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER one;
+    setInt(&one, 1);
+
+    return sub(a, &one, b);
 }

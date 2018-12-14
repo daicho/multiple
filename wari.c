@@ -5,12 +5,18 @@
 
 int main(void)
 {
-    int a, b;
+    struct NUMBER a, b, c, d;
 
     srandom(time(NULL));
 
-    simpleDivide(7, -3, &a, &b);
-    printf("a = %d, b = %d\n", a, b);
+    setRnd(&a, 2);
+    printf("a = "); dispNumber(&a);
+    setRnd(&b, 1);
+    printf("b = "); dispNumber(&b);
+
+    divide(&a, &b, &c, &d);
+    printf("c = "); dispNumber(&c);
+    printf("d = "); dispNumber(&d);
 
     return 0;
 }
