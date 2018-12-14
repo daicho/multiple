@@ -428,34 +428,6 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 }
 
 //
-// c <- a / b の商
-// d <- a / b の剰余
-//
-int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
-{
-    struct NUMBER e;
-
-    if (isZero(b) == 0)
-        return -1;
-
-    copyNumber(a, d);
-    clearByZero(c);
-
-    while (1) {
-        if (numComp(d, b) = -1)
-            break;
-
-        sub(d, b, e);
-        copyNumber(e, d);
-
-        increment(c, e);
-        copyNumber(e, c);
-    }
-
-    return 0;
-}
-
-//
 // b <- a + 1
 //
 int increment(struct NUMBER *a, struct NUMBER *b)
@@ -475,4 +447,32 @@ int decrement(struct NUMBER *a, struct NUMBER *b)
     setInt(&one, 1);
 
     return sub(a, &one, b);
+}
+
+//
+// c <- a / b の商
+// d <- a / b の剰余
+//
+int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
+{
+    struct NUMBER e;
+
+    if (isZero(b) == 0)
+        return -1;
+
+    copyNumber(a, d);
+    clearByZero(c);
+
+    while (1) {
+        if (numComp(d, b) == -1)
+            break;
+
+        sub(d, b, &e);
+        copyNumber(&e, d);
+
+        increment(c, &e);
+        copyNumber(&e, c);
+    }
+
+    return 0;
 }
