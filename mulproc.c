@@ -264,40 +264,6 @@ int divBy10(const struct NUMBER *a, struct NUMBER *b)
 }
 
 //
-// 加算しか使わない乗算
-//
-int simpleMultiple(int a, int b, int *c)
-{
-    int i;
-    int temp;
-
-    // 大きい数に小さい数をかける
-    if (a < b) {
-        temp = a;
-        a = b;
-        b = temp;
-    }
-
-    // 負の数に対応
-    if (b < 0) {
-        a *= -1;
-        b *= -1;
-    }
-
-    *c = 0;
-
-    i = 0;
-    while (1) {
-        if (i >= b)
-            break;
-        *c += a;
-        i++;
-    }
-
-    return 0;
-}
-
-//
 // c <- a + b
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
@@ -416,30 +382,75 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
     clearByZero(c);
 
-    for (i = 0; i < KETA ; i++) {
-        struct NUMBER d;
-        struct NUMBER e;
+    if (getSign(a) == PLUS && getSign(b) == PLUS) {
+        for (i = 0; i < KETA ; i++) {
+            struct NUMBER d;
+            struct NUMBER e;
 
-        clearByZero(&d);
+            clearByZero(&d);
 
-        carry = 0;
-        for (j = 0; j + i < KETA; j++) {
-            d.n[j + i] = a->n[j] * b->n[i] + carry;
-            carry = d.n[i] / 10;
-            d.n[i] %= 10;
+            carry = 0;
+            for (j = 0; j + i < KETA; j++) {
+                d.n[j + i] = a->n[j] * b->n[i] + carry;
+                carry = d.n[i] / 10;
+                d.n[i] %= 10;
+            }
+
+            if (carry)
+                return -1;
+
+            if (add(c, &d, &e))
+                return -1;
+
+            copyNumber(&e, c);
         }
 
-        if (carry)
-            return -1;
+        ret = 0;
+    } else {
+        struct NUMBER d;
+        struct NUMBER e;
+        getAbs(a, &d);
+        getAbs(b, &e);
 
-        if (add(c, &d, &e))
-            return -1;
+        ret = multiple(&d, &e, c);
 
-        copyNumber(&e, c);
+        if (getSign(a) == PLUS && getSign(b) == MINUS)
+            setSign(c, MINUS);
+
+        if (getSign(a) == MINUS && getSign(b) == PLUS)
+            setSign(c, MINUS);
+
+        if (getSign(a) == MINUS && getSign(b) == MINUS)
+            setSign(c, PLUS);
     }
-
-    ret = 0;
 
     return ret;
 }
 
+//
+// c <- a / b の商
+// d <- a / b の剰余
+//
+int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
+{
+    int i;
+
+    clearByZero(c);
+    clearByZero(d);
+
+    if (isZero(b) == 0)
+        return -1;
+
+    i = 0;
+    while (1) {
+        if (a < b)
+            break;
+        a -= b;
+        i++;
+    }
+
+    *c = i * sign_a * sign_b;
+    *d = a * sign_a;
+
+    return 0;
+}

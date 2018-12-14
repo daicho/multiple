@@ -26,8 +26,8 @@ int  getSign(const struct NUMBER *);
 
 int  mulBy10(const struct NUMBER *, struct NUMBER *);
 int  divBy10(const struct NUMBER *, struct NUMBER *);
-int  simpleMultiple(int a, int b, int *c);
 
 int  add(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  sub(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  multiple(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
+int  divide(const struct NUMBER *, const struct NUMBER *, struct NUMBER *, struct NUMBER *);
