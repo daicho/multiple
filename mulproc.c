@@ -410,23 +410,35 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 //
 int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
-    // 途中
-    int i;
+    int i, j;
     int ret;
-    int carry = 0;
+    int carry;
 
     clearByZero(c);
 
     for (i = 0; i < KETA ; i++) {
-        c->n[i] = a->n[i] * b->n[i] + carry;
-        carry = c->n[i] / 10;
-        c->n[i] %= 10;
+        struct NUMBER d;
+        struct NUMBER e;
+
+        clearByZero(&d);
+
+        carry = 0;
+        for (j = 0; j + i < KETA; j++) {
+            d.n[j + i] = a->n[j] * b->n[i] + carry;
+            carry = d.n[i] / 10;
+            d.n[i] %= 10;
+        }
+
+        if (carry)
+            return -1;
+
+        if (add(c, &d, &e))
+            return -1;
+
+        copyNumber(&e, c);
     }
 
-    if (carry == 0)
-        ret = 0;
-    else
-        ret = 1;
+    ret = 0;
 
     return ret;
 }

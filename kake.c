@@ -9,12 +9,13 @@ int main(void)
 
     srandom(time(NULL));
 
-    setRnd(&a, 3);
+    setRnd(&a, KETA / 2);
     printf("a = "); dispNumber(&a);
-    setRnd(&b, 3);
+    setRnd(&b, KETA / 2 + 1);
     printf("b = "); dispNumber(&b);
 
-    multiple(&a, &b, &c);
+    if (multiple(&a, &b, &c))
+        printf("over flow\n");
     printf("c = "); dispNumber(&c);
 
     return 0;
