@@ -51,7 +51,7 @@ int bisection(double a, double b, double *x)
 
 double f(double x)
 {
-    return x * x - 2.0;
+    return cos(x / 2);
 }
 
 int sgn(double g)
