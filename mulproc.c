@@ -25,13 +25,13 @@ void setRnd(struct NUMBER *a, int k)
 
     clearByZero(a);
     for (i = 0; i < k; i++)
-        a->n[i] = random() % 10;
+        a->n[i] = rand() % 10;
 
     // ゼロだったら符号をプラスにセット
     if (isZero(a) == 0)
         setSign(a, PLUS);
     else
-        setSign(a, (random() % 2) ? PLUS : MINUS);
+        setSign(a, (rand() % 2) ? PLUS : MINUS);
 }
 
 //
@@ -428,28 +428,6 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 }
 
 //
-// b <- a + 1
-//
-int increment(struct NUMBER *a, struct NUMBER *b)
-{
-    struct NUMBER one;
-    setInt(&one, 1);
-
-    return add(a, &one, b);
-}
-
-//
-// b <- a - 1
-//
-int decrement(struct NUMBER *a, struct NUMBER *b)
-{
-    struct NUMBER one;
-    setInt(&one, 1);
-
-    return sub(a, &one, b);
-}
-
-//
 // c <- a / b の商
 // d <- a / b の剰余
 //
@@ -475,4 +453,34 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
     }
 
     return 0;
+}
+
+int power(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
+{
+    if (b == 0) return 1;
+    if (b == 1) return a;
+    if (n % 2 == 0) return power(a * a, b / 2);
+    return a * power(x, n - 1);
+}
+
+//
+// b <- a + 1
+//
+int increment(const struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER one;
+    setInt(&one, 1);
+
+    return add(a, &one, b);
+}
+
+//
+// b <- a - 1
+//
+int decrement(const struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER one;
+    setInt(&one, 1);
+
+    return sub(a, &one, b);
 }

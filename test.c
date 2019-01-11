@@ -7,7 +7,7 @@ int main(void)
 {
     struct NUMBER a, b, c;
 
-    srandom(time(NULL));
+    srand(time(NULL));
 
     setRnd(&a, KETA);
     printf("a = "); dispNumber(&a);
