@@ -31,7 +31,9 @@ int  add(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  sub(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  multiple(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  divide(const struct NUMBER *, const struct NUMBER *, struct NUMBER *, struct NUMBER *);
-int  power(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 
 int  increment(const struct NUMBER *, struct NUMBER *);
 int  decrement(const struct NUMBER *, struct NUMBER *);
+
+int  power(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
+int  gcd(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);

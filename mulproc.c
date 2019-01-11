@@ -455,14 +455,6 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
     return 0;
 }
 
-int power(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
-{
-    if (b == 0) return 1;
-    if (b == 1) return a;
-    if (n % 2 == 0) return power(a * a, b / 2);
-    return a * power(x, n - 1);
-}
-
 //
 // b <- a + 1
 //
@@ -483,4 +475,28 @@ int decrement(const struct NUMBER *a, struct NUMBER *b)
     setInt(&one, 1);
 
     return sub(a, &one, b);
+}
+
+//
+// c <- a^b
+//
+int power(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
+{
+    if (b == 0) return 1;
+    if (b == 1) return a;
+    if (b % 2 == 0) return power(a * a, b / 2);
+    return a * power(a, b - 1);
+}
+
+//
+// c <- aとbの最大公約数
+//
+int gcd(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
+{
+    struct NUMBER d;
+    div(a, b, NULL, &d);
+    if (b == 0) return 1;
+    if (b == 1) return a;
+    if (b % 2 == 0) return power(a * a, b / 2);
+    return a * power(a, b - 1);
 }
