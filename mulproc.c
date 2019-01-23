@@ -125,6 +125,40 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
 }
 
 //
+// aが素数かどうか判定する
+// 戻り値：
+//   0 ... 素数でない
+//   1 ... 素数
+//
+int isPrime(const struct NUMBER *a)
+{
+    struct NUMBER two;
+    struct NUMBER b, c, d, e, f, g;
+    
+    setInt(&two, 2);
+    setInt(&b, 2);
+
+    divide(a, &two, &c, &d);
+
+    while (1) {
+        // a/2を上回ったら終了
+        if (numComp(&b, &c) == 1)
+            break;
+
+        // 余りが0だったら素数でない
+        divide(a, &b, &e, &f);
+        if (isZero(&f) == 0)
+            return 0;
+
+        // インクリメント
+        increment(&b, &g);
+        copyNumber(&g, &b);
+    }
+
+    return 1;
+}
+
+//
 // aの絶対値をbに返す
 //
 void getAbs(const struct NUMBER *a, struct NUMBER *b)
@@ -476,7 +510,7 @@ int decrement(const struct NUMBER *a, struct NUMBER *b)
 
     return sub(a, &one, b);
 }
-
+/*
 //
 // c <- a^b
 //
@@ -500,3 +534,4 @@ int gcd(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
     if (b % 2 == 0) return power(a * a, b / 2);
     return a * power(a, b - 1);
 }
+*/

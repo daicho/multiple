@@ -17,6 +17,7 @@ void dispNumber(const struct NUMBER *);
 
 int  isZero(const struct NUMBER *);
 int  numComp(const struct NUMBER *, const struct NUMBER *);
+int  isPrime(const struct NUMBER *);
 
 void getAbs(const struct NUMBER *, struct NUMBER *);
 int  setInt(struct NUMBER *, int);
