@@ -6,6 +6,7 @@
 int main(void)
 {
     int i;
+    struct NUMBER p;
     struct NUMBER a, b, c, d;
 
     for (i = -2; i <= 120; i++) {
