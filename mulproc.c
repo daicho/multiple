@@ -4,6 +4,9 @@
 #include <string.h>
 #include <limits.h>
 
+struct NUMBER ONE = {{1}, PLUS};
+struct NUMBER TWO = {{2}, PLUS};
+
 //
 // すべての桁を0で初期化
 //
@@ -101,10 +104,12 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
 
     if (getSign(a) == PLUS && getSign(b) == MINUS)
         return 1;
+
     if (getSign(a) == MINUS && getSign(b) == PLUS)
         return -1;
 
     if (getSign(a) == PLUS && getSign(b) == PLUS) {
+        // 上位桁から順番に比較
         for (i = KETA - 1; i >= 0; i--) {
             if (a->n[i] > b->n[i])
                 return 1;
@@ -115,6 +120,7 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
     }
 
     if (getSign(a) == MINUS && getSign(b) == MINUS) {
+        // 絶対値を比較した結果を反転
         struct NUMBER c, d;
         getAbs(a, &c);
         getAbs(b, &d);
@@ -132,43 +138,62 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
 //
 int isPrime(const struct NUMBER *a)
 {
-    struct NUMBER two;
-    struct NUMBER b, c, d, e, f, g;
-
-    setInt(&two, 2);
+    struct NUMBER i;
+    struct NUMBER b, c, d, e, f;
 
     // 2より小さければ素数でない
-    if (numComp(a, &two) == -1)
+    if (numComp(a, &TWO) == -1)
         return 0;
 
     // 2は素数
-    if (numComp(a, &two) == 0)
+    if (numComp(a, &TWO) == 0)
         return 1;
 
-    divide(a, &two, &c, &d);
+    divide(a, &TWO, &b, &c);
 
     // 2で割り切れれば素数でない
-    if (isZero(&d) == 0)
+    if (isZero(&c) == 0)
         return 0;
 
-    setInt(&b, 3);
+    setInt(&i, 3);
 
     while (1) {
         // a/2を上回ったら終了
-        if (numComp(&b, &c) == 1)
+        if (numComp(&i, &b) == 1)
             break;
 
         // 余りが0だったら素数でない
-        divide(a, &b, &e, &f);
-        if (isZero(&f) == 0)
+        divide(a, &i, &d, &e);
+        if (isZero(&e) == 0)
             return 0;
 
         // 更新
-        add(&b, &two, &g);
-        copyNumber(&g, &b);
+        add(&i, &TWO, &f);
+        copyNumber(&f, &i);
     }
 
     return 1;
+}
+
+//
+// aがソフィー・ジェルマン素数かどうか判定する
+// 戻り値：
+//   0 ... ソフィー・ジェルマン素数でない
+//   1 ... ソフィー・ジェルマン素数
+//
+int isSophie(const struct NUMBER *a) {
+    struct NUMBER b, c;
+
+    if (isPrime(a)) {
+        // c <- 2a + 1
+        if (multiple(a, &TWO, &b)) return 0;
+        if (add(&b, &ONE, &c))     return 0;
+
+        if (isPrime(&c))
+            return 1;
+    }
+
+    return 0;
 }
 
 //
@@ -207,6 +232,7 @@ int setInt(struct NUMBER *a, int x)
         a->n[i] = x % 10;
         x /= 10;
     }
+
     return -1;
 }
 
@@ -240,6 +266,7 @@ int setIntFromString(struct NUMBER *a, char *x)
         a->n[i] = *x - '0';
         x++;
     }
+
     return 0;
 }
 
@@ -312,13 +339,13 @@ int divBy10(const struct NUMBER *a, struct NUMBER *b)
 
 //
 // c <- a + b
+// 戻り値：
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
 //
 int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
     int i;
-    int ret;
     int carry = 0;
 
     clearByZero(c);
@@ -332,45 +359,53 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
             c->n[i] %= 10;
         }
 
+        // すべての計算が終わっても桁上りがあったらオーバーフロー
         if (carry == 0)
-            ret = 0;
+            return 0;
         else
-            ret = -1;
+            return -1;
     }
 
+    // (-a) + (-b) = -((+a) + (+b))
     if (getSign(a) == MINUS && getSign(b) == MINUS) {
         struct NUMBER d, e;
         getAbs(a, &d);
         getAbs(b, &e);
 
-        ret = add(&d, &e, c);
-        setSign(c, MINUS);
+        if (add(&d, &e, c) == 0) {
+            setSign(c, MINUS);
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
+    // (+a) + (-b) = (+a) - (+b)
     if (getSign(a) == PLUS && getSign(b) == MINUS) {
         struct NUMBER d;
         getAbs(b, &d);
-        ret = sub(a, &d, c);
+        return sub(a, &d, c);
     }
 
+    // (-a) + (+b) = (+b) - (+a)
     if (getSign(a) == MINUS && getSign(b) == PLUS) {
         struct NUMBER d;
         getAbs(a, &d);
-        ret = sub(b, &d, c);
+        return sub(b, &d, c);
     }
 
-    return ret;
+    return 0;
 }
 
 //
 // c <- a - b
+// 戻り値：
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
 //
 int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
     int i;
-    int ret;
     int carry = 0;
 
     clearByZero(c);
@@ -396,40 +431,50 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
             setSign(c, MINUS);
         }
 
+        // すべての計算が終わっても桁借りがあったらオーバーフロー
         if (carry == 0)
-            ret = 0;
+            return 0;
         else
-            ret = -1;
+            return -1;
     }
 
+    // (-a) - (+b) = -((+a) + (+b))
     if (getSign(a) == MINUS && getSign(b) == PLUS) {
         struct NUMBER d;
         getAbs(a, &d);
-        ret = add(&d, b, c);
-        setSign(c, MINUS);
+
+        if (add(&d, b, c) == 0) {
+            setSign(c, MINUS);
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
+    // a - (-b) = a + (+b)
     if (getSign(b) == MINUS) {
         struct NUMBER d;
         getAbs(b, &d);
-        ret = add(a, &d, c);
+        return add(a, &d, c);
     }
 
-    return ret;
+    return 0;
 }
 
 //
 // c <- a * b
+// 戻り値：
+//    0 ... 正常終了
+//   -1 ... オーバーフロー
 //
 int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 {
     int i, j;
-    int ret;
     int carry;
 
     clearByZero(c);
 
-    if (getSign(a) == PLUS && getSign(b) == PLUS) {
+    if (getSign(a) == getSign(b)) {
         for (i = 0; i < KETA ; i++) {
             struct NUMBER d;
             struct NUMBER e;
@@ -443,40 +488,40 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
                 d.n[i] %= 10;
             }
 
+            // すべての計算が終わっても桁上りがあったらオーバーフロー
             if (carry)
                 return -1;
 
+            // 加算時のオーバーフロー
             if (add(c, &d, &e))
                 return -1;
 
             copyNumber(&e, c);
         }
 
-        ret = 0;
+        return 0;
     } else {
-        struct NUMBER d;
-        struct NUMBER e;
+        struct NUMBER d, e;
+
+        // 異符号ならば絶対値同士の計算結果の符号を反転する
         getAbs(a, &d);
         getAbs(b, &e);
 
-        ret = multiple(&d, &e, c);
-
-        if (getSign(a) == PLUS && getSign(b) == MINUS)
+        if (multiple(&d, &e, c)) {
             setSign(c, MINUS);
-
-        if (getSign(a) == MINUS && getSign(b) == PLUS)
-            setSign(c, MINUS);
-
-        if (getSign(a) == MINUS && getSign(b) == MINUS)
-            setSign(c, PLUS);
+            return 0;
+        } else {
+            return -1;
+        }
     }
-
-    return ret;
 }
 
 //
 // c <- a / b の商
 // d <- a / b の剰余
+// 戻り値：
+//    0 ... 正常終了
+//   -1 ... ゼロで除算
 //
 int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
 {
@@ -504,25 +549,26 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
 
 //
 // b <- a + 1
+// 戻り値：
+//    0 ... 正常終了
+//   -1 ... オーバーフロー
 //
 int increment(const struct NUMBER *a, struct NUMBER *b)
 {
-    struct NUMBER one;
-    setInt(&one, 1);
-
-    return add(a, &one, b);
+    return add(a, &ONE, b);
 }
 
 //
 // b <- a - 1
+// 戻り値：
+//    0 ... 正常終了
+//   -1 ... オーバーフロー
 //
 int decrement(const struct NUMBER *a, struct NUMBER *b)
 {
-    struct NUMBER one;
-    setInt(&one, 1);
-
-    return sub(a, &one, b);
+    return sub(a, &ONE, b);
 }
+
 /*
 //
 // c <- a^b
