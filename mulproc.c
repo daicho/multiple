@@ -134,11 +134,24 @@ int isPrime(const struct NUMBER *a)
 {
     struct NUMBER two;
     struct NUMBER b, c, d, e, f, g;
-    
+
     setInt(&two, 2);
-    setInt(&b, 2);
+
+    // 2より小さければ素数でない
+    if (numComp(a, &two) == -1)
+        return 0;
+
+    // 2は素数
+    if (numComp(a, &two) == 0)
+        return 1;
 
     divide(a, &two, &c, &d);
+
+    // 2で割り切れれば素数でない
+    if (isZero(&d) == 0)
+        return 0;
+
+    setInt(&b, 3);
 
     while (1) {
         // a/2を上回ったら終了
@@ -150,8 +163,8 @@ int isPrime(const struct NUMBER *a)
         if (isZero(&f) == 0)
             return 0;
 
-        // インクリメント
-        increment(&b, &g);
+        // 更新
+        add(&b, &two, &g);
         copyNumber(&g, &b);
     }
 

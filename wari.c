@@ -8,7 +8,7 @@ int main(void)
     int i;
     struct NUMBER a, b, c, d;
 
-    for (i = 2; i <= 120; i++) {
+    for (i = -2; i <= 120; i++) {
         setInt(&a, i);
         printf("%3d : %d\n", i, isPrime(&a));
     }
