@@ -75,6 +75,25 @@ void dispNumber(const struct NUMBER *a)
 }
 
 //
+// シンプルに値を表示
+//
+void simpleDispNumber(const struct NUMBER *a)
+{
+    int i;
+
+    if (getSign(a) == MINUS)
+        printf("-");
+
+    for (i = KETA - 1; i >= 0; i--)
+        if (a->n[i]) break;
+
+    for (; i >= 0; i--)
+        printf("%d", a->n[i]);
+
+    putchar('\n');
+}
+
+//
 // 値が0か判別する
 // 戻り値：
 //    0 ... a == 0

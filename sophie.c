@@ -6,18 +6,23 @@ int main(void)
     struct NUMBER p;
     struct NUMBER a, b;
     struct NUMBER two;
+    FILE *fp;
+
+    if ((fp = fopen("sophie.txt", "w")) == NULL) {
+        printf("ファイルオープンに失敗しました\n");
+        return -1;
+    }
 
     setInt(&two, 2);
-    setIntFromString(&a, "1000");
-    setInt(&p, 3);
+    setIntFromString(&a, "1000000000");
+    setIntFromString(&p, "3");
 
-    while (1) {
-        // 終了条件
-        if (numComp(&p, &a) == 1)
-            break;
+    // 2はソフィー・ジェルマン素数
+    simpleDispNumber(&two);
 
+    while (numComp(&p, &a) == -1) {
         if (isSophie(&p))
-            dispNumber(&p);
+            simpleDispNumber(&p);
 
         // 更新
         add(&p, &two, &b);
