@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include "mulproc.h"
 
 int main(void)
@@ -6,15 +7,10 @@ int main(void)
     struct NUMBER p;
     struct NUMBER a, b;
     struct NUMBER two;
-    FILE *fp;
-
-    if ((fp = fopen("sophie.txt", "w")) == NULL) {
-        printf("ファイルオープンに失敗しました\n");
-        return -1;
-    }
+    time_t start = time(NULL);
 
     setInt(&two, 2);
-    setIntFromString(&a, "1000000000");
+    setIntFromString(&a, "100000");
     setIntFromString(&p, "3");
 
     // 2はソフィー・ジェルマン素数
@@ -28,6 +24,8 @@ int main(void)
         add(&p, &two, &b);
         copyNumber(&b, &p);
     }
+
+    printf("Time : %lld\n", time(NULL) - start);
 
     return 0;
 }
