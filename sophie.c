@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+#include <sys/timeb.h>
 #include "mulproc.h"
 
 int main(void)
@@ -7,10 +7,14 @@ int main(void)
     struct NUMBER p;
     struct NUMBER a, b;
     struct NUMBER two;
-    time_t start = time(NULL);
+    struct timeval tv;
+    double tstart, tend;
+
+    gettimeofday(&tv, NULL);
+    tstart = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
 
     setInt(&two, 2);
-    setIntFromString(&a, "100000");
+    setIntFromString(&a, "10000");
     setIntFromString(&p, "3");
 
     // 2はソフィー・ジェルマン素数
@@ -25,7 +29,9 @@ int main(void)
         copyNumber(&b, &p);
     }
 
-    printf("Time : %I64d\n", (long long)(time(NULL) - start));
+    gettimeofday(&tv, NULL);
+    tend = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
+    printf("Time : %f\n", tend - tstart);
 
     return 0;
 }
