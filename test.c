@@ -9,10 +9,8 @@ int main(void)
 
     srand(time(NULL));
 
-    setRnd(&a, KETA);
-    printf("a = "); dispNumber(&a);
-    setRnd(&b, KETA);
-    printf("b = "); dispNumber(&b);
+    setInt(&a, 100000);
+    squareRoot(&a, &b);
 
     return 0;
 }

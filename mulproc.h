@@ -38,5 +38,6 @@ int  divide(const struct NUMBER *, const struct NUMBER *, struct NUMBER *, struc
 int  increment(const struct NUMBER *, struct NUMBER *);
 int  decrement(const struct NUMBER *, struct NUMBER *);
 
+int  squareRoot(const struct NUMBER *, struct NUMBER *);
 int  power(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);
 int  gcd(const struct NUMBER *, const struct NUMBER *, struct NUMBER *);

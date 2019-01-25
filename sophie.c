@@ -25,7 +25,7 @@ int main(void)
         copyNumber(&b, &p);
     }
 
-    printf("Time : %lld\n", time(NULL) - start);
+    printf("Time : %I64d\n", (long long)(time(NULL) - start));
 
     return 0;
 }

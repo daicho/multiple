@@ -158,7 +158,7 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
 int isPrime(const struct NUMBER *a)
 {
     struct NUMBER i;
-    struct NUMBER b, c, d, e, f;
+    struct NUMBER b, c, d, e, f, g;
 
     // 2より小さければ素数でない
     if (numComp(a, &TWO) == -1)
@@ -173,12 +173,13 @@ int isPrime(const struct NUMBER *a)
     // 2で割り切れれば素数でない
     if (isZero(&c) == 0)
         return 0;
-
+    
+    squareRoot(a, &g);
     setInt(&i, 3);
 
     while (1) {
-        // a/2を上回ったら終了
-        if (numComp(&i, &b) == 1)
+        // sqrt(a)を上回ったら終了
+        if (numComp(&i, &g) == 1)
             break;
 
         // 余りが0だったら素数でない
@@ -586,6 +587,37 @@ int increment(const struct NUMBER *a, struct NUMBER *b)
 int decrement(const struct NUMBER *a, struct NUMBER *b)
 {
     return sub(a, &ONE, b);
+}
+
+//
+// b <- sqrt(a)
+// 戻り値：
+//   0 ... 正常終了
+//
+int squareRoot(const struct NUMBER *a, struct NUMBER *b)
+{
+    struct NUMBER c, d, e, f, g;
+
+    copyNumber(a, &c);
+    clearByZero(b);
+    setInt(&d, 1);
+
+    while (1) {
+        if (numComp(&c, &d) == -1)
+            break;
+
+        sub(&c, &d, &e);
+        copyNumber(&e, &c);
+
+        // 更新
+        increment(b, &g);
+        copyNumber(&g, b);
+
+        add(&d, &TWO, &f);
+        copyNumber(&f, &d);
+    }
+
+    return 0;
 }
 
 /*
