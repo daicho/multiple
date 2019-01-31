@@ -14,8 +14,8 @@ int main(void)
     tstart = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
 
     setInt(&two, 2);
-    setIntFromString(&a, "10000");
-    setIntFromString(&p, "3");
+    setIntFromString(&a, "9999999999");
+    setIntFromString(&p, "2147492183");
 
     // 2はソフィー・ジェルマン素数
     simpleDispNumber(&two);

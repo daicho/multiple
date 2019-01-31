@@ -557,8 +557,11 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
         copyNumber(b, &f);
         setInt(&g, 1);
 
-        while (numComp(d, &f) == 1) {
+        while (1) {
             mulBy10(&f, &e);
+            if (numComp(d, &e) != 1)
+                break;
+
             copyNumber(&e, &f);
 
             mulBy10(&g, &e);
