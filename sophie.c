@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 #include "mulproc.h"
 
 int main(void)

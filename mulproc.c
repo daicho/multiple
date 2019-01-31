@@ -545,7 +545,7 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 //
 int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, struct NUMBER *d)
 {
-    struct NUMBER e;
+    struct NUMBER e, f, g;
 
     if (isZero(b) == 0)
         return -1;
@@ -553,14 +553,22 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
     copyNumber(a, d);
     clearByZero(c);
 
-    while (1) {
-        if (numComp(d, b) == -1)
-            break;
+    while (numComp(d, b) != -1) {
+        copyNumber(b, &f);
+        setInt(&g, 1);
 
-        sub(d, b, &e);
+        while (numComp(d, &f) == 1) {
+            mulBy10(&f, &e);
+            copyNumber(&e, &f);
+
+            mulBy10(&g, &e);
+            copyNumber(&e, &g);
+        }
+
+        sub(d, &f, &e);
         copyNumber(&e, d);
 
-        increment(c, &e);
+        add(c, &g, &e);
         copyNumber(&e, c);
     }
 
