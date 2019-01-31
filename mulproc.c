@@ -28,7 +28,7 @@ void setRnd(struct NUMBER *a, int k)
 
     clearByZero(a);
     for (i = 0; i < k; i++)
-        a->n[i] = rand() % 10;
+        a->n[i] = rand() % N;
 
     // ゼロだったら符号をプラスにセット
     if (isZero(a) == 0)
@@ -70,7 +70,7 @@ void dispNumber(const struct NUMBER *a)
         printf("-");
 
     for (i = KETA - 1; i >= 0; i--)
-        printf("%2d", a->n[i]);
+        printf("%6d", a->n[i]);
     putchar('\n');
 }
 
@@ -249,8 +249,8 @@ int setInt(struct NUMBER *a, int x)
         if (x == 0)
             return 0;
 
-        a->n[i] = x % 10;
-        x /= 10;
+        a->n[i] = x % N;
+        x /= N;
     }
 
     return -1;
@@ -315,12 +315,12 @@ int getSign(const struct NUMBER *a)
 }
 
 //
-// aを10倍してbに返す
+// aをN倍してbに返す
 // 戻り値：
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
 //
-int mulBy10(const struct NUMBER *a, struct NUMBER *b)
+int mulByN(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
@@ -336,11 +336,11 @@ int mulBy10(const struct NUMBER *a, struct NUMBER *b)
 }
 
 //
-// aを1/10倍してbに返す
+// aを1/N倍してbに返す
 // 戻り値：
-//   aを10で割った余り
+//   aをNで割った余り
 //
-int divBy10(const struct NUMBER *a, struct NUMBER *b)
+int divByN(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
@@ -375,8 +375,8 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
         for (i = 0; i < KETA; i++) {
             c->n[i] = a->n[i] + b->n[i] + carry;
-            carry = c->n[i] / 10;
-            c->n[i] %= 10;
+            carry = c->n[i] / N;
+            c->n[i] %= N;
         }
 
         // すべての計算が終わっても桁上りがあったらオーバーフロー
@@ -442,7 +442,7 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
                     c->n[i] = digit_a - digit_b;
                     carry = 0;
                 } else {
-                    c->n[i] = 10 + digit_a - digit_b;
+                    c->n[i] = N + digit_a - digit_b;
                     carry = 1;
                 }
             }
@@ -504,8 +504,8 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
             carry = 0;
             for (j = 0; j + i < KETA; j++) {
                 d.n[j + i] = a->n[j] * b->n[i] + carry;
-                carry = d.n[i] / 10;
-                d.n[i] %= 10;
+                carry = d.n[i] / N;
+                d.n[i] %= N;
             }
 
             // すべての計算が終わっても桁上りがあったらオーバーフロー
@@ -558,13 +558,13 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
         setInt(&g, 1);
 
         while (1) {
-            mulBy10(&f, &e);
+            mulByN(&f, &e);
             if (numComp(d, &e) != 1)
                 break;
 
             copyNumber(&e, &f);
 
-            mulBy10(&g, &e);
+            mulByN(&g, &e);
             copyNumber(&e, &g);
         }
 
