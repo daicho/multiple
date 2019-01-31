@@ -28,7 +28,7 @@ void setRnd(struct NUMBER *a, int k)
 
     clearByZero(a);
     for (i = 0; i < k; i++)
-        a->n[i] = rand() % N;
+        a->n[i] = rand() % 10;
 
     // ゼロだったら符号をプラスにセット
     if (isZero(a) == 0)
@@ -249,8 +249,8 @@ int setInt(struct NUMBER *a, int x)
         if (x == 0)
             return 0;
 
-        a->n[i] = x % N;
-        x /= N;
+        a->n[i] = x % 10;
+        x /= 10;
     }
 
     return -1;
@@ -375,8 +375,8 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
         for (i = 0; i < KETA; i++) {
             c->n[i] = a->n[i] + b->n[i] + carry;
-            carry = c->n[i] / N;
-            c->n[i] %= N;
+            carry = c->n[i] / 10;
+            c->n[i] %= 10;
         }
 
         // すべての計算が終わっても桁上りがあったらオーバーフロー
@@ -442,7 +442,7 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
                     c->n[i] = digit_a - digit_b;
                     carry = 0;
                 } else {
-                    c->n[i] = N + digit_a - digit_b;
+                    c->n[i] = 10 + digit_a - digit_b;
                     carry = 1;
                 }
             }
@@ -504,8 +504,8 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
             carry = 0;
             for (j = 0; j + i < KETA; j++) {
                 d.n[j + i] = a->n[j] * b->n[i] + carry;
-                carry = d.n[i] / N;
-                d.n[i] %= N;
+                carry = d.n[i] / 10;
+                d.n[i] %= 10;
             }
 
             // すべての計算が終わっても桁上りがあったらオーバーフロー
