@@ -94,6 +94,25 @@ void simpleDispNumber(const struct NUMBER *a)
 }
 
 //
+// ファイルに値を保存
+//
+void saveNumber(FILE *fp, const struct NUMBER *a)
+{
+    int i;
+
+    if (getSign(a) == MINUS)
+        fprintf(fp, "-");
+
+    for (i = KETA - 1; i >= 0; i--)
+        if (a->n[i]) break;
+
+    for (; i >= 0; i--)
+        fprintf(fp, "%d", a->n[i]);
+
+    fputc('\n', fp);
+}
+
+//
 // 値が0か判別する
 // 戻り値：
 //    0 ... a == 0

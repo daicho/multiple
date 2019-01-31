@@ -9,20 +9,28 @@ int main(void)
     struct NUMBER two;
     struct timeval tv;
     double tstart, tend;
+    FILE *fp;
 
     gettimeofday(&tv, NULL);
     tstart = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
 
+    if ((fp = fopen("sophie.txt", "w")) == NULL) {
+        printf("Error\n");
+        return -1;
+    }
+
     setInt(&two, 2);
-    setIntFromString(&a, "10000000");
+    setIntFromString(&a, "100000");
     setIntFromString(&p, "3");
 
     // 2はソフィー・ジェルマン素数
     simpleDispNumber(&two);
 
     while (numComp(&p, &a) == -1) {
-        if (isSophie(&p))
+        if (isSophie(&p)) {
             simpleDispNumber(&p);
+            saveNumber(fp, &p);
+        }
 
         // 更新
         add(&p, &two, &b);

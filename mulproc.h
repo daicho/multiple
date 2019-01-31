@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #define PLUS  1
 #define MINUS -1
 #define KETA  10
@@ -15,6 +17,7 @@ void copyNumber(const struct NUMBER *, struct NUMBER *);
 void swap(struct NUMBER *, struct NUMBER *);
 void dispNumber(const struct NUMBER *);
 void simpleDispNumber(const struct NUMBER *);
+void saveNumber(FILE *fp, const struct NUMBER *);
 
 int  isZero(const struct NUMBER *);
 int  numComp(const struct NUMBER *, const struct NUMBER *);
