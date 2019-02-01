@@ -29,7 +29,7 @@ int main(void)
     while (numComp(&p, &a) == -1) {
         if (isSophie(&p)) {
             simpleDispNumber(&p);
-            saveNumber(fp, &p);
+            //saveNumber(fp, &p);
         }
 
         // 更新

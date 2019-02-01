@@ -79,18 +79,20 @@ void dispNumber(const struct NUMBER *a)
 //
 void simpleDispNumber(const struct NUMBER *a)
 {
-    int i;
+    int i, j = 0;
+    char num[KETA + 2];
 
     if (getSign(a) == MINUS)
-        printf("-");
+        num[j++] = '-';
 
     for (i = KETA - 1; i >= 0; i--)
         if (a->n[i]) break;
 
     for (; i >= 0; i--)
-        printf("%d", a->n[i]);
+        num[j++] = '0' + a->n[i];
+    num[j] = '\0';
 
-    putchar('\n');
+    printf("%s\n", num);
 }
 
 //
