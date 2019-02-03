@@ -341,7 +341,7 @@ int getSign(const struct NUMBER *a)
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
 //
-int mulByN(const struct NUMBER *a, struct NUMBER *b)
+int mulBy10(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
@@ -579,13 +579,13 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
         setInt(&g, 1);
 
         while (1) {
-            mulByN(&f, &e);
+            mulBy10(&f, &e);
             if (numComp(d, &e) != 1)
                 break;
 
             copyNumber(&e, &f);
 
-            mulByN(&g, &e);
+            mulBy10(&g, &e);
             copyNumber(&e, &g);
         }
 
