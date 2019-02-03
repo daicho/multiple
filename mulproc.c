@@ -319,11 +319,11 @@ int setIntFromString(struct NUMBER *a, char *x)
 //
 int setSign(struct NUMBER *a, int s)
 {
-    if (s != PLUS && s != MINUS) {
-        return -1;
-    } else {
+    if (s == PLUS || s == MINUS) {
         a->sign = s;
         return 0;
+    } else {
+        return -1;
     }
 }
 
@@ -336,12 +336,12 @@ int getSign(const struct NUMBER *a)
 }
 
 //
-// aをN倍してbに返す
+// aを10倍してbに返す
 // 戻り値：
 //    0 ... 正常終了
 //   -1 ... オーバーフロー
 //
-int mulByN(const struct NUMBER *a, struct NUMBER *b)
+int mulBy10(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
@@ -357,11 +357,11 @@ int mulByN(const struct NUMBER *a, struct NUMBER *b)
 }
 
 //
-// aを1/N倍してbに返す
+// aを1/10倍してbに返す
 // 戻り値：
-//   aをNで割った余り
+//   aを10で割った余り
 //
-int divByN(const struct NUMBER *a, struct NUMBER *b)
+int divBy10(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
@@ -579,13 +579,13 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
         setInt(&g, 1);
 
         while (1) {
-            mulByN(&f, &e);
+            mulBy10(&f, &e);
             if (numComp(d, &e) != 1)
                 break;
 
             copyNumber(&e, &f);
 
-            mulByN(&g, &e);
+            mulBy10(&g, &e);
             copyNumber(&e, &g);
         }
 
@@ -651,29 +651,3 @@ int squareRoot(const struct NUMBER *a, struct NUMBER *b)
 
     return 0;
 }
-
-/*
-//
-// c <- a^b
-//
-int power(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
-{
-    if (b == 0) return 1;
-    if (b == 1) return a;
-    if (b % 2 == 0) return power(a * a, b / 2);
-    return a * power(a, b - 1);
-}
-
-//
-// c <- aとbの最大公約数
-//
-int gcd(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
-{
-    struct NUMBER d;
-    div(a, b, NULL, &d);
-    if (b == 0) return 1;
-    if (b == 1) return a;
-    if (b % 2 == 0) return power(a * a, b / 2);
-    return a * power(a, b - 1);
-}
-*/
