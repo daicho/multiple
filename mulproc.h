@@ -4,7 +4,7 @@
 
 #define PLUS  1
 #define MINUS -1
-#define KETA  10
+#define KETA  12
 
 struct NUMBER {
     int n[KETA];
