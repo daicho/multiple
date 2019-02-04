@@ -20,16 +20,21 @@ int main(void)
     }
 
     setInt(&two, 2);
-    setIntFromString(&a, "100000");
+    //setIntFromString(&a, "100000");
     setIntFromString(&p, "3");
 
     // 2はソフィー・ジェルマン素数
-    simpleDispNumber(&two);
+    //simpleDispNumber(&two);
+    saveNumber(fp, &two);
 
-    while (numComp(&p, &a) == -1) {
+    while (1) {
+        gettimeofday(&tv, NULL);
+        if ((double)tv.tv_sec + (double)tv.tv_usec * 1.e-6 - tstart >= 43200)
+            break;
+
         if (isSophie(&p)) {
-            simpleDispNumber(&p);
-            //saveNumber(fp, &p);
+            //simpleDispNumber(&p);
+            saveNumber(fp, &p);
         }
 
         // 更新
@@ -37,9 +42,9 @@ int main(void)
         copyNumber(&b, &p);
     }
 
-    gettimeofday(&tv, NULL);
-    tend = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
-    printf("Time : %f\n", tend - tstart);
+    //gettimeofday(&tv, NULL);
+    //tend = (double)tv.tv_sec + (double)tv.tv_usec * 1.e-6;
+    //printf("Time : %f\n", tend - tstart);
 
     return 0;
 }

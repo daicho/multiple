@@ -100,18 +100,20 @@ void simpleDispNumber(const struct NUMBER *a)
 //
 void saveNumber(FILE *fp, const struct NUMBER *a)
 {
-    int i;
+    int i, j = 0;
+    char num[KETA + 2];
 
     if (getSign(a) == MINUS)
-        fprintf(fp, "-");
+        num[j++] = '-';
 
     for (i = KETA - 1; i >= 0; i--)
         if (a->n[i]) break;
 
     for (; i >= 0; i--)
-        fprintf(fp, "%d", a->n[i]);
+        num[j++] = '0' + a->n[i];
+    num[j] = '\0';
 
-    fputc('\n', fp);
+    fprintf(fp, "%s\n", num);
 }
 
 //
