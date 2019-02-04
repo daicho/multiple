@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 
 struct NUMBER ONE = {{1}, PLUS};
 struct NUMBER TWO = {{2}, PLUS};
+struct NUMBER FIV = {{5}, PLUS};
 
 //
 // すべての桁を0で初期化
@@ -79,20 +79,7 @@ void dispNumber(const struct NUMBER *a)
 //
 void simpleDispNumber(const struct NUMBER *a)
 {
-    int i, j = 0;
-    char num[KETA + 2];
-
-    if (getSign(a) == MINUS)
-        num[j++] = '-';
-
-    for (i = KETA - 1; i >= 0; i--)
-        if (a->n[i]) break;
-
-    for (; i >= 0; i--)
-        num[j++] = '0' + a->n[i];
-    num[j] = '\0';
-
-    printf("%s\n", num);
+    saveNumber(stdout, a);
 }
 
 //
@@ -103,9 +90,11 @@ void saveNumber(FILE *fp, const struct NUMBER *a)
     int i, j = 0;
     char num[KETA + 2];
 
+    // マイナスなら符号を付ける
     if (getSign(a) == MINUS)
         num[j++] = '-';
 
+    // 上位桁の0は表示しない
     for (i = KETA - 1; i >= 0; i--)
         if (a->n[i]) break;
 
@@ -114,23 +103,6 @@ void saveNumber(FILE *fp, const struct NUMBER *a)
     num[j] = '\0';
 
     fprintf(fp, "%s\n", num);
-}
-
-//
-// 値が0か判別する
-// 戻り値：
-//    0 ... a == 0
-//   -1 ... a != 0
-//
-int isZero(const struct NUMBER *a)
-{
-    int i;
-
-    for (i = 0; i < KETA; i++) {
-        if (a->n[i] != 0)
-            return -1;
-    }
-    return 0;
 }
 
 //
@@ -168,8 +140,23 @@ int numComp(const struct NUMBER *a, const struct NUMBER *b)
         getAbs(b, &d);
         return numComp(&c, &d) * -1;
     }
+}
 
-    return 0;
+//
+// 値が0か判別する
+// 戻り値：
+//    0 ... a == 0
+//   -1 ... a != 0
+//
+int isZero(const struct NUMBER *a)
+{
+    struct NUMBER b;
+    clearByZero(&b);
+
+    if (numComp(a, &b) == 0)
+        return 0;
+    else
+        return -1;
 }
 
 //
@@ -224,15 +211,27 @@ int isPrime(const struct NUMBER *a)
 //   0 ... ソフィー・ジェルマン素数でない
 //   1 ... ソフィー・ジェルマン素数
 //
-int isSophie(const struct NUMBER *a) {
-    struct NUMBER b, c;
+int isSophie(const struct NUMBER *p) {
+    struct NUMBER a, b;
 
-    if (isPrime(a)) {
-        // c <- 2a + 1
-        if (multiple(a, &TWO, &b)) return 0;
-        if (add(&b, &ONE, &c))     return 0;
+    // 2はソフィー・ジェルマン素数
+	if (numComp(p, &TWO) == 0)
+		return 1;
 
-        if (isPrime(&c))
+    // 5はソフィー・ジェルマン素数
+	if (numComp(p, &FIV) == 0)
+		return 1;
+
+    // 1の位が1, 3, 9でなければソフィー・ジェルマン素数ではない
+    if (p->n[0] != 1 && p->n[0] != 3 && p->n[0] != 9)
+    	return 0;
+
+    if (isPrime(p)) {
+        // b <- 2p + 1
+        if (multiple(p, &TWO, &a)) return 0;
+        if (add(&a, &ONE, &b))     return 0;
+
+        if (isPrime(&b))
             return 1;
     }
 
@@ -257,7 +256,6 @@ void getAbs(const struct NUMBER *a, struct NUMBER *b)
 int setInt(struct NUMBER *a, int x)
 {
     int i;
-
     clearByZero(a);
 
     // 符号の設定
@@ -265,17 +263,19 @@ int setInt(struct NUMBER *a, int x)
         setSign(a, PLUS);
     } else {
         setSign(a, MINUS);
-        x = -x;
+        x *= -1;
     }
 
     for (i = 0; i < KETA; i++) {
         if (x == 0)
             return 0;
 
+        // 下位ビットから順番に代入していく
         a->n[i] = x % 10;
         x /= 10;
     }
 
+    // すべての桁に入り切らなかったら-1を返す
     return -1;
 }
 
@@ -285,7 +285,7 @@ int setInt(struct NUMBER *a, int x)
 //    0 ... 正常終了
 //   -1 ... xの値がaに設定しきれなかった
 //
-int setIntFromString(struct NUMBER *a, char *x)
+int setString(struct NUMBER *a, char *x)
 {
     int i, l;
 
@@ -303,6 +303,7 @@ int setIntFromString(struct NUMBER *a, char *x)
         return -1;
 
     for (i = l - 1; i >= 0; i--) {
+    	// 数字以外が含まれていたら終了
         if (*x < '0' || '9' < *x)
             return -1;
 
@@ -325,6 +326,7 @@ int setSign(struct NUMBER *a, int s)
         a->sign = s;
         return 0;
     } else {
+        // 異常な符号が与えられたら-1を返す
         return -1;
     }
 }
@@ -347,12 +349,15 @@ int mulBy10(const struct NUMBER *a, struct NUMBER *b)
 {
     int i;
 
+    // 最上位桁が0でなかったら終了
     if (a->n[KETA - 1])
         return -1;
 
+    // 1つずつ上位の桁にずらしていく
     for (i = 0; i < KETA - 1; i++)
         b->n[i + 1] = a->n[i];
     b->n[0] = 0;
+
     setSign(b, getSign(a));
 
     return 0;
@@ -393,12 +398,13 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
     clearByZero(c);
 
+    // (+a) + (+b)
     if (getSign(a) == PLUS && getSign(b) == PLUS) {
         setSign(c, PLUS);
 
         for (i = 0; i < KETA; i++) {
             c->n[i] = a->n[i] + b->n[i] + carry;
-            carry = c->n[i] / 10;
+            carry = c->n[i] / 10; // 桁上り
             c->n[i] %= 10;
         }
 
@@ -436,8 +442,6 @@ int add(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
         getAbs(a, &d);
         return sub(b, &d, c);
     }
-
-    return 0;
 }
 
 //
@@ -453,23 +457,23 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
 
     clearByZero(c);
 
+    // (+a) - (+b)
     if (getSign(a) == PLUS && getSign(b) == PLUS) {
         if (numComp(a, b) != -1) {
             setSign(c, PLUS);
 
             for (i = 0; i < KETA; i++) {
-                int digit_a = a->n[i] - carry;
-                int digit_b = b->n[i];
-
-                if (digit_a >= digit_b) {
-                    c->n[i] = digit_a - digit_b;
+                c->n[i] = a->n[i] - carry - b->n[i];
+                
+                if (c->n[i] >= 0) {
                     carry = 0;
                 } else {
-                    c->n[i] = 10 + digit_a - digit_b;
+                    c->n[i] += 10;
                     carry = 1;
                 }
             }
-        } else {
+        } else if (numComp(a, b) != -1) {
+            // 引く数の方が大きかったら反対にして符号を反転
             sub(b, a, c);
             setSign(c, MINUS);
         }
@@ -500,8 +504,6 @@ int sub(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
         getAbs(b, &d);
         return add(a, &d, c);
     }
-
-    return 0;
 }
 
 //
@@ -527,7 +529,7 @@ int multiple(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c)
             carry = 0;
             for (j = 0; j + i < KETA; j++) {
                 d.n[j + i] = a->n[j] * b->n[i] + carry;
-                carry = d.n[i] / 10;
+                carry = d.n[i] / 10; // 桁上り
                 d.n[i] %= 10;
             }
 
@@ -570,6 +572,7 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
 {
     struct NUMBER e, f, g;
 
+    // 除数が0だったらゼロ除算エラー
     if (isZero(b) == 0)
         return -1;
 
@@ -580,6 +583,7 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
         copyNumber(b, &f);
         setInt(&g, 1);
 
+        // できるだけ大きな数をまとめて引く
         while (1) {
             mulBy10(&f, &e);
             if (numComp(d, &e) != 1)
@@ -591,9 +595,11 @@ int divide(const struct NUMBER *a, const struct NUMBER *b, struct NUMBER *c, str
             copyNumber(&e, &g);
         }
 
+        // 剰余を更新
         sub(d, &f, &e);
         copyNumber(&e, d);
 
+        // 商を更新
         add(c, &g, &e);
         copyNumber(&e, c);
     }
@@ -630,25 +636,23 @@ int decrement(const struct NUMBER *a, struct NUMBER *b)
 //
 int squareRoot(const struct NUMBER *a, struct NUMBER *b)
 {
-    struct NUMBER c, d, e, f, g;
+    struct NUMBER c, d, e;
 
     copyNumber(a, &c);
     clearByZero(b);
     setInt(&d, 1);
 
-    while (1) {
-        if (numComp(&c, &d) == -1)
-            break;
-
+    while (numComp(&c, &d) != -1) {
+        // 奇数を引いていく
         sub(&c, &d, &e);
         copyNumber(&e, &c);
 
         // 更新
-        increment(b, &g);
-        copyNumber(&g, b);
+        add(b, &ONE, &e);
+        copyNumber(&e, b);
 
-        add(&d, &TWO, &f);
-        copyNumber(&f, &d);
+        add(&d, &TWO, &e);
+        copyNumber(&e, &d);
     }
 
     return 0;

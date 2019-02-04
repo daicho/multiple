@@ -1,16 +1,19 @@
-#pragma once
-
 #include <stdio.h>
 
+// 桁数
+#define KETA 10
+
+// 符号
 #define PLUS  1
 #define MINUS -1
-#define KETA  12
 
+// 多倍長整数
 struct NUMBER {
-    int n[KETA];
-    int sign;
+    int n[KETA]; // 桁
+    int sign;    // 符号
 };
 
+// プロトタイプ宣言
 void clearByZero(struct NUMBER *);
 void setRnd(struct NUMBER *, int);
 void copyNumber(const struct NUMBER *, struct NUMBER *);
@@ -26,7 +29,7 @@ int  isSophie(const struct NUMBER *);
 
 void getAbs(const struct NUMBER *, struct NUMBER *);
 int  setInt(struct NUMBER *, int);
-int  setIntFromString(struct NUMBER *, char *);
+int  setString(struct NUMBER *, char *);
 int  setSign(struct NUMBER *, int);
 int  getSign(const struct NUMBER *);
 
